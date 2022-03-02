@@ -1,3 +1,22 @@
+"""
+4 Principales of Object Oriented Programming:
+
+--Encapsulation:
+    Refers to the restriction of the direct access to some of our attributes. 
+    -- we can add restrictions to our code that it needs to run through before we can alter some attribute. 
+       Ex: self.__name = name; we cannot alter this code following an assignement.
+
+    -- We disallow direct access to attributes in the instance, unless we directly access a property decorator.
+        -> We can modify values of these attributes, by accessing direct methods that allow us to; ex: applyIncrement.
+
+--Abstraction:
+    Shows only the necessary attributes of a created instance, hiding the unnecessary ones.
+    --Purpose: Hiding uneccessary details from us users.
+"""
+
+
+
+
 import csv
 
 class Item:
@@ -6,9 +25,9 @@ class Item:
 
     def __init__(self, name: str, pricing: float, quantity=0, broken=0):
         # assign values to self object
-        self.name = name
+        self.__name = name # to create a read only attribute, we must add a SINGLE UNDERSCORE to the beginning.
         self.quantity = quantity
-        self.pricing = pricing
+        self.__pricing = pricing
         self.broken = broken
 
         # run validations of recieved arguments using the assert keyword
@@ -21,16 +40,44 @@ class Item:
 
         # actions to execute
         Item.all.append(self)
-        
-    def calculateTotalPrice(self):
-        return self.quantity * self.pricing
+
+    @property
+    def price(self):
+        return self.__pricing
     
     def applyDiscount(self):
-        self.price = self.pricing * self.pay_rate
+        self.__pricing = self.__pricing * self.pay_rate
+    
+    def applyIncrement(self, increment_value):
+        self.__pricing = self.__pricing + self.__pricing * increment_value
+    @property
+    # Property decorator = Read-Only attribute
+    # this decorator is seen as a getter. 
+    def name(self):
+        # print("You're trying to get the name") # this line will execute, before the setter decorator
+        return self.__name
+    
+    @name.setter
+    # this decorator is seen as a setter.
+    # allows us to set the "read-only" attribute to a new 'value'
+    # you can use setters to restrict data you/your user are attempting to grab
+    def name(self, value):
+        if isinstance(value, str):
+            # lets restrict the length of characters for new name:
+            if len(value) < 8:
+                # raise Exception("Name length cannot be less than 8 characters."); This will raise a custom exception in our code; The code below is nicer though.
+                print("Name length cannot be less than 8 characters.")
+            else:
+                self.__name = value # otherwise, set the new "private" attribute to the inputted value.
+        else:
+            print("Name cannot be an integer. Please change this parameter.")
+        
+    def calculateTotalPrice(self):
+        return self.quantity * self.__pricing
 
     # 'representative' magic function:
     def __repr__(self):
-        return f"Item('{self.name}', {self.pricing}, {self.quantity})"
+        return f"Item('{self.name}', {self.__pricing}, {self.quantity})"
 
     # decorator to make the code below a class method
     
@@ -74,6 +121,28 @@ class Item:
 
         print(f"{round(percentage, 2)}% of '{self.name}' are broken") # rounds the decmial to 2 rather than 'n' points.
 
+# ----------------------------------------------------------------------------------------------------------------------
+#           Example of Abstraction: Doesn't need to be accessed by the user, can be sent through the body of code in our object.
+#               -> The addition of '__', makes the functions invisible to the user
+    def __constructBody(self):
+        return f"""
+        Hello, ...
+        We have {self.name.upper()}, in stock! ({self.quantity} items).
+        Regards,
+        Micheal.
+        """
+
+    def __connect(self):
+        pass
+
+    def __send(self):
+        pass
+
+    def sendEmail(self):
+        self.__constructBody()
+        self.__connect()
+        self.__send()
+
 class Phone(Item):
     # we recieve the exact same parameters from the previous Parent Class
     
@@ -90,11 +159,6 @@ class Laptop(Item):
         super().__init__(name, pricing, quantity, broken)
         Laptop.all.append(all)
     
-phone1 = Phone("samsungPhoneS20", 750, 37, 15)
-phone2 = Phone("samsungPhoneS21", 1000, 15, 7)
-
-phone1.calculateQualityControl()
-
 # -------------------------------------------------------------------------------------------
 
 # here is the code to run to get all the names of instance:
