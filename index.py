@@ -12,11 +12,13 @@
 --Abstraction:
     Shows only the necessary attributes of a created instance, hiding the unnecessary ones.
     --Purpose: Hiding uneccessary details from us users.
+
+-- Inheritance:
+    Ability to reuse code we've already created, just like we created child classes that derive off of the parent class Item.
+
+-- Polymorphism:
+    Refers to the use of a single type entity, to represent different types in different scenarios.
 """
-
-
-
-
 import csv
 
 class Item:
